@@ -2,6 +2,8 @@
 
 **Ultra-low-latency wireless screen mirroring for cheap Android projectors — built because Miracast wasn't good enough.**
 
+**English** · **[Español](README.es.md)**
+
 ![platform](https://img.shields.io/badge/platform-Android-green)
 ![language](https://img.shields.io/badge/native-C%2B%2B%20%2F%20Kotlin-blue)
 <!-- Add a license badge here once you pick one, e.g. ![license](https://img.shields.io/badge/license-MIT-lightgrey) -->
