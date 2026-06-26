@@ -4,6 +4,8 @@
 
 **English** · **[Español](README.es.md)**
 
+This project is distributed under the terms of the [`LICENSE`](LICENSE) file in the repository root.
+
 ![platform](https://img.shields.io/badge/platform-Android-green)
 ![language](https://img.shields.io/badge/native-C%2B%2B%20%2F%20Kotlin-blue)
 <!-- Add a license badge here once you pick one, e.g. ![license](https://img.shields.io/badge/license-MIT-lightgrey) -->
