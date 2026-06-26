@@ -1,0 +1,38 @@
+# ============================================================
+#  UltraCast — .gitignore (va en la RAÍZ del repo)
+#  Cubre los dos proyectos (sender/ y receiver/) a la vez,
+#  porque los patrones no están anclados a una carpeta.
+# ============================================================
+
+# --- Gradle / build (se regeneran solos) ---
+.gradle/
+build/
+
+# --- Android Studio / IntelliJ (config de la máquina) ---
+.idea/
+*.iml
+*.iws
+*.ipr
+captures/
+
+# --- NDK / código nativo (intermedios de compilación) ---
+.cxx/
+.externalNativeBuild/
+
+# --- Config local: NUNCA se publica (ruta del SDK, etc.) ---
+local.properties
+
+# --- Secretos de firma: NUNCA se publican ---
+*.jks
+*.keystore
+keystore.properties
+
+# --- Binarios compilados (los APK de release van en GitHub Releases, no en el código) ---
+*.apk
+*.aab
+*.ap_
+
+# --- Sistema operativo / logs ---
+*.log
+.DS_Store
+Thumbs.db
