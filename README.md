@@ -331,3 +331,5 @@ Bug reports, tuning findings, and pull requests for the roadmap items are all ap
 - The **congestion-control design** follows the ideas behind Google Congestion Control (GCC), the algorithm used in WebRTC.
 - Kindred open-source projects that proved low-latency mirroring/streaming can be excellent: **scrcpy** and **Moonlight / Sunshine**.
 - Built out of frustration with Miracast on cheap Android projectors — and a refusal to accept that it had to be that bad.
+
+follow me ;) https://www.instagram.com/joel.pasapera/
