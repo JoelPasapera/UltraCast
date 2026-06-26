@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UltraCast — Low-latency screen mirroring for cheap projectors</title>
+<meta name="description" content="Stream your Android phone to a cheap HY300-class projector over Wi-Fi. A custom low-latency pipeline with forward error correction and congestion control that stays smooth where Miracast stutters and drops. Free and open source.">
+
+<!-- Social sharing (Reddit/Twitter/etc.). Add an og:image (1200x630) later for a preview thumbnail. -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="UltraCast — Low-latency screen mirroring for cheap projectors">
+<meta property="og:description" content="Mirror your Android screen to a cheap projector over Wi-Fi, smoothly. Open source.">
+<!-- <meta property="og:image" content="https://JoelPasapera.github.io/UltraCast/preview.png"> -->
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg:#0A0C10;
+    --bg-elev:#11141B;
+    --bg-elev-2:#161B24;
+    --line:#1F252F;
+    --line-soft:#181D26;
+    --text:#E8EBF1;
+    --muted:#8C95A6;
+    --dim:#5C6573;
+    --aqua:#2FE3C9;
+    --aqua-soft:rgba(47,227,201,.10);
+    --aqua-line:rgba(47,227,201,.30);
+    --amber:#F4A15D;
+    --amber-soft:rgba(244,161,93,.12);
+    --radius:16px;
+    --radius-sm:11px;
+    --maxw:1140px;
+    --display:"Space Grotesk", system-ui, sans-serif;
+    --mono:"JetBrains Mono", ui-monospace, monospace;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:var(--display);
+    background:var(--bg);
+    color:var(--text);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  a{color:inherit;text-decoration:none}
+  ::selection{background:var(--aqua);color:#06120F}
+  :focus-visible{outline:2px solid var(--aqua);outline-offset:3px;border-radius:4px}
+
+  .wrap{width:100%;max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{
+    font-family:var(--mono);font-size:.72rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--aqua);font-weight:500;
+  }
+  .muted{color:var(--muted)}
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position:sticky;top:0;z-index:50;
+    backdrop-filter:blur(14px);
+    background:rgba(10,12,16,.72);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s ease, background .3s ease;
+  }
+  header.nav.scrolled{border-bottom:1px solid var(--line);background:rgba(10,12,16,.86)}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.05rem;letter-spacing:-.01em}
+  .brand svg{display:block}
+  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-links a.lnk{font-size:.92rem;color:var(--muted);transition:color .2s ease}
+  .nav-links a.lnk:hover{color:var(--text)}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:var(--display);font-weight:600;font-size:.92rem;
+    padding:10px 18px;border-radius:10px;cursor:pointer;
+    transition:transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+    border:1px solid transparent;white-space:nowrap;
+  }
+  .btn-primary{background:var(--aqua);color:#06120F;box-shadow:0 0 0 0 var(--aqua-line)}
+  .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(47,227,201,.45)}
+  .btn-ghost{background:transparent;color:var(--text);border-color:var(--line)}
+  .btn-ghost:hover{border-color:var(--aqua-line);transform:translateY(-2px)}
+  .btn-lg{padding:13px 24px;font-size:1rem}
+
+  /* ---------- HERO ---------- */
+  .hero{position:relative;padding:clamp(56px,9vw,108px) 0 clamp(48px,7vw,84px);overflow:hidden}
+  .hero::before{ /* aqua glow */
+    content:"";position:absolute;inset:-20% 30% auto -10%;height:560px;
+    background:radial-gradient(closest-side, rgba(47,227,201,.16), transparent 70%);
+    filter:blur(20px);pointer-events:none;z-index:0;
+  }
+  .hero::after{ /* faint grid */
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:.5;
+    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:54px 54px;
+    -webkit-mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+            mask-image:radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 80%);
+  }
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+  .hero-copy{max-width:560px}
+  .hero h1{
+    font-size:clamp(2.4rem,5.4vw,4rem);line-height:1.04;font-weight:700;
+    letter-spacing:-.025em;margin:20px 0 22px;
+  }
+  .hero h1 .hl{color:var(--aqua)}
+  .hero p.lede{font-size:clamp(1.04rem,1.6vw,1.18rem);color:var(--muted);max-width:520px}
+  .hero-cta{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+  .hero-note{font-family:var(--mono);font-size:.76rem;color:var(--dim);margin-top:20px;letter-spacing:.02em}
+  .hero-note b{color:var(--muted);font-weight:500}
+
+  /* ---------- HERO VISUAL: the projector "screen" + live HUD ---------- */
+  .screen{
+    position:relative;border-radius:var(--radius);overflow:hidden;
+    aspect-ratio:16/10;
+    background:
+      radial-gradient(120% 90% at 78% 18%, rgba(47,227,201,.14), transparent 55%),
+      radial-gradient(90% 80% at 12% 95%, rgba(124,108,255,.10), transparent 60%),
+      linear-gradient(160deg,#10141C,#0B0E14);
+    border:1px solid var(--line);
+    box-shadow:0 40px 80px -40px rgba(0,0,0,.8), inset 0 1px 0 rgba(255,255,255,.04);
+  }
+  .screen::after{ /* scanline sheen */
+    content:"";position:absolute;inset:0;pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.018) 0 1px, transparent 1px 3px);
+    mix-blend-mode:overlay;
+  }
+  .screen-bezel{position:absolute;inset:0;border-radius:var(--radius);border:1px solid rgba(255,255,255,.05);pointer-events:none}
+  .live{
+    position:absolute;top:16px;left:18px;display:flex;align-items:center;gap:8px;
+    font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
+  }
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua)}
+  .pulse{animation:pulse 1.8s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
+
+  /* the HUD card, mirroring the real on-device overlay */
+  .hud{
+    position:absolute;left:18px;bottom:18px;right:18px;max-width:330px;
+    background:rgba(6,10,13,.66);
+    border:1px solid var(--aqua-line);border-radius:12px;
+    padding:13px 15px 14px;
+    font-family:var(--mono);
+    backdrop-filter:blur(3px);
+  }
+  .hud-title{font-size:.6rem;letter-spacing:.26em;color:var(--dim);text-transform:uppercase;margin-bottom:9px}
+  .hud-rows{display:grid;grid-template-columns:1fr 1fr;gap:5px 16px;font-size:.74rem;color:var(--aqua)}
+  .hud-rows .k{color:var(--muted)}
+  .hud-rows b{font-weight:600}
+  .hud-foot{margin-top:10px;font-size:.66rem;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .hud-foot .ok{color:var(--aqua)}
+  /* live throughput bars */
+  .bars{display:flex;align-items:flex-end;gap:2px;height:18px;margin-top:11px}
+  .bars span{flex:1;background:linear-gradient(var(--aqua),rgba(47,227,201,.35));border-radius:1px;height:30%;
+    animation:eq 1.1s ease-in-out infinite;animation-delay:calc(var(--i) * -.09s);opacity:.85}
+  @keyframes eq{0%,100%{height:22%}50%{height:90%}}
+
+  /* ---------- generic section ---------- */
+  section{position:relative}
+  .sec-pad{padding:clamp(64px,9vw,110px) 0}
+  .sec-head{max-width:640px;margin-bottom:52px}
+  .sec-head h2{font-size:clamp(1.8rem,3.4vw,2.6rem);font-weight:700;letter-spacing:-.02em;line-height:1.1;margin:14px 0 0}
+  .divider{height:1px;background:linear-gradient(90deg,var(--line),transparent);border:0}
+
+  /* ---------- thesis bridge ---------- */
+  .thesis{border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft);background:var(--bg-elev)}
+  .thesis .wrap{padding:clamp(40px,6vw,64px) 24px}
+  .thesis p{font-size:clamp(1.3rem,2.6vw,1.9rem);font-weight:500;letter-spacing:-.015em;line-height:1.35;max-width:880px}
+  .thesis .em{color:var(--amber)}
+  .thesis .em2{color:var(--aqua)}
+
+  /* ---------- features ---------- */
+  .feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .card{
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
+    padding:26px 24px 28px;transition:transform .2s ease, border-color .2s ease, background .2s ease;
+  }
+  .card:hover{transform:translateY(-4px);border-color:var(--aqua-line);background:var(--bg-elev-2)}
+  .card .ic{
+    width:42px;height:42px;border-radius:11px;display:grid;place-items:center;
+    background:var(--aqua-soft);border:1px solid var(--aqua-line);margin-bottom:18px;color:var(--aqua);
+  }
+  .card h3{font-size:1.12rem;font-weight:600;letter-spacing:-.01em;margin-bottom:8px}
+  .card p{font-size:.94rem;color:var(--muted);line-height:1.58}
+
+  /* ---------- how it works ---------- */
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .step{position:relative;padding:28px 24px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg-elev)}
+  .step .num{font-family:var(--mono);font-size:.8rem;color:var(--aqua);letter-spacing:.1em;font-weight:600}
+  .step h3{font-size:1.12rem;font-weight:600;margin:14px 0 8px;letter-spacing:-.01em}
+  .step p{font-size:.93rem;color:var(--muted)}
+  .steps-note{font-family:var(--mono);font-size:.78rem;color:var(--dim);margin-top:22px}
+
+  /* ---------- demo ---------- */
+  .demo-frame{
+    position:relative;aspect-ratio:16/9;border-radius:var(--radius);overflow:hidden;
+    border:1px solid var(--line);
+    background:
+      radial-gradient(110% 90% at 50% 30%, rgba(47,227,201,.07), transparent 60%),
+      linear-gradient(160deg,#0F131A,#0A0D12);
+    display:grid;place-items:center;text-align:center;
+  }
+  .demo-frame .grid-bg{position:absolute;inset:0;opacity:.4;
+    background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
+    background-size:46px 46px;-webkit-mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%)}
+  .play{position:relative;z-index:1}
+  .play-btn{
+    width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;
+    background:var(--aqua-soft);border:1px solid var(--aqua-line);color:var(--aqua);
+    transition:transform .2s ease, box-shadow .2s ease;
+  }
+  .demo-frame:hover .play-btn{transform:scale(1.06);box-shadow:0 0 40px -6px rgba(47,227,201,.4)}
+  .play h3{font-size:1.15rem;font-weight:600}
+  .play p{font-family:var(--mono);font-size:.78rem;color:var(--dim);margin-top:6px;letter-spacing:.04em}
+
+  /* ---------- download ---------- */
+  .dl-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:6px}
+  .dl-card{
+    background:var(--bg-elev);border:1px solid var(--line);border-radius:var(--radius);
+    padding:30px 28px;display:flex;flex-direction:column;gap:6px;transition:border-color .2s ease,transform .2s ease;
+  }
+  .dl-card:hover{border-color:var(--aqua-line);transform:translateY(-3px)}
+  .dl-card .tag{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--aqua)}
+  .dl-card h3{font-size:1.3rem;font-weight:600;letter-spacing:-.015em;margin-top:4px}
+  .dl-card .file{font-family:var(--mono);font-size:.82rem;color:var(--muted);margin:2px 0 6px}
+  .dl-card p{font-size:.92rem;color:var(--muted);margin-bottom:18px}
+  .dl-card .btn{align-self:flex-start;margin-top:auto}
+  .dl-foot{font-family:var(--mono);font-size:.8rem;color:var(--dim);margin-top:24px;text-align:center}
+  .dl-foot a{color:var(--muted);border-bottom:1px solid var(--line);padding-bottom:1px}
+  .dl-foot a:hover{color:var(--aqua);border-color:var(--aqua-line)}
+
+  /* ---------- status / honesty ---------- */
+  .status{border:1px solid var(--line);border-radius:var(--radius);background:
+    linear-gradient(180deg,var(--bg-elev),var(--bg));padding:clamp(34px,5vw,52px)}
+  .status .badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:.72rem;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--amber);
+    background:var(--amber-soft);border:1px solid rgba(244,161,93,.3);padding:6px 12px;border-radius:99px}
+  .status h2{font-size:clamp(1.5rem,2.6vw,2rem);font-weight:700;letter-spacing:-.02em;margin:20px 0 12px}
+  .status p{color:var(--muted);max-width:680px;font-size:1.02rem}
+  .status .row{display:flex;flex-wrap:wrap;gap:14px;margin-top:26px}
+
+  /* ---------- footer ---------- */
+  footer{border-top:1px solid var(--line);padding:56px 0 44px;margin-top:0}
+  .foot-grid{display:flex;justify-content:space-between;align-items:flex-start;gap:40px;flex-wrap:wrap}
+  .foot-brand{max-width:300px}
+  .foot-brand .brand{margin-bottom:14px}
+  .foot-brand p{color:var(--dim);font-size:.9rem}
+  .foot-links{display:flex;gap:60px;flex-wrap:wrap}
+  .foot-col h4{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--dim);margin-bottom:16px;font-weight:500}
+  .foot-col a{display:block;color:var(--muted);font-size:.92rem;margin-bottom:11px;transition:color .2s ease}
+  .foot-col a:hover{color:var(--aqua)}
+  .foot-bottom{margin-top:48px;padding-top:24px;border-top:1px solid var(--line-soft);
+    display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+    font-family:var(--mono);font-size:.76rem;color:var(--dim)}
+
+  /* ---------- reveal animation ---------- */
+  .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.in{opacity:1;transform:none}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:44px}
+    .hero-copy{max-width:none;order:1}
+    .hero-visual{order:2}
+    .feat-grid,.steps{grid-template-columns:1fr 1fr}
+    .nav-links .lnk{display:none}
+  }
+  @media (max-width:680px){
+    .feat-grid,.steps,.dl-grid{grid-template-columns:1fr}
+    .foot-links{gap:36px}
+    .hud{max-width:none}
+    .hud-rows{font-size:.7rem}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;scroll-behavior:auto !important}
+    .reveal{opacity:1;transform:none;transition:none}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="UltraCast home">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="5" cy="19" r="2.3" fill="#2FE3C9"/>
+        <path d="M5 12.5a6.5 6.5 0 0 1 6.5 6.5" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round"/>
+        <path d="M5 7a12 12 0 0 1 12 12" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+        <path d="M5 1.5A17.5 17.5 0 0 1 22.5 19" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".3"/>
+      </svg>
+      UltraCast
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="lnk" href="#features">Features</a>
+      <a class="lnk" href="#how">How it works</a>
+      <a class="lnk" href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">GitHub</a>
+      <a class="btn btn-primary" href="#download">Download</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <span class="eyebrow">Open source · Your Wi-Fi · Ultra-low latency</span>
+      <h1>Low-latency screen mirroring for <span class="hl">cheap projectors</span>.</h1>
+      <p class="lede">Stream your Android phone to an HY300-class projector over your own Wi-Fi. A custom pipeline with error correction and congestion control keeps the picture smooth where Miracast stutters, freezes, and drops.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary btn-lg" href="#download">
+          Download the app
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+        <a class="btn btn-ghost btn-lg" href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">
+          View source
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <p class="hero-note"><b>Two free APKs</b> · Apache-2.0 · No account, no cloud</p>
+    </div>
+
+    <div class="hero-visual">
+      <!-- The signature: a mock of what the projector shows, with the live diagnostic HUD. -->
+      <div class="screen" role="img" aria-label="A projector display showing the live diagnostic HUD: 60 fps, 0.3% loss, 2.1 ms jitter, connection healthy.">
+        <div class="screen-bezel"></div>
+        <div class="live"><span class="dot pulse"></span> Live · mirroring</div>
+        <div class="hud">
+          <div class="hud-title">Quality</div>
+          <div class="hud-rows">
+            <div><span class="k">fps</span> <b>60</b></div>
+            <div><span class="k">bitrate</span> <b>7.8 Mb/s</b></div>
+            <div><span class="k">loss</span> <b>0.3%</b></div>
+            <div><span class="k">jitter</span> <b>2.1 ms</b></div>
+            <div><span class="k">FEC</span> <b>6%</b></div>
+            <div><span class="k">link</span> <b>ok</b></div>
+          </div>
+          <div class="bars" id="bars" aria-hidden="true"></div>
+          <div class="hud-foot"><span>frames OK <b style="color:var(--aqua)">1820</b></span><span>· FEC rescued <b style="color:var(--aqua)">34</b></span><span>· <span class="ok">lost 0</span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THESIS ============ -->
+<section class="thesis">
+  <div class="wrap">
+    <p>Miracast assumes a perfect link. Real Wi-Fi <span class="em">isn't</span> — so UltraCast measures the connection and <span class="em2">adapts, packet by packet</span>.</p>
+  </div>
+</section>
+
+<!-- ============ FEATURES ============ -->
+<section class="sec-pad" id="features">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Under the hood</span>
+      <h2>What makes it hold up</h2>
+    </div>
+    <div class="feat-grid">
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
+        <h3>UDP, not TCP</h3>
+        <p>A lost packet never stalls the stream. No buffering spiral, no frozen frame waiting on a retransmit.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Error correction</h3>
+        <p>Reed–Solomon parity rebuilds lost packets on the fly — no round-trip. NEON-accelerated on 64-bit ARM.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h3l2 6 4-14 2.5 9L19 9l2 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Congestion control</h3>
+        <p>Tells real congestion from radio interference, and only drops quality when the link is actually full — the same idea WebRTC uses.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2.4" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="17" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg></div>
+        <h3>Adaptive bitrate</h3>
+        <p>Quality rises and falls with the network, live — without ever restarting the stream.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg></div>
+        <h3>Content-adaptive frame rate</h3>
+        <p>Full motion when it counts, near-silent on a still slide. Your battery and your Wi-Fi both notice.</p>
+      </div>
+
+      <div class="card reveal">
+        <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-6 3 14 3-10 2 4 4-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <h3>Live diagnostics</h3>
+        <p>An on-screen HUD shows fps, loss, jitter, and recovery in real time. You can watch it working.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW IT WORKS ============ -->
+<section class="sec-pad" id="how" style="background:var(--bg-elev);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">Three steps</span>
+      <h2>How it works</h2>
+    </div>
+    <div class="steps">
+      <div class="step reveal">
+        <span class="num">01</span>
+        <h3>Install on the projector</h3>
+        <p>Sideload the receiver APK once. Leave it running — it waits fullscreen for your phone.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">02</span>
+        <h3>Install on the phone</h3>
+        <p>Install the sender APK and grant screen capture when Android asks.</p>
+      </div>
+      <div class="step reveal">
+        <span class="num">03</span>
+        <h3>Cast</h3>
+        <p>It finds the projector on your network and mirrors your screen. That's it.</p>
+      </div>
+    </div>
+    <p class="steps-note reveal">Both devices on the same Wi-Fi. The projector sideload steps are in the <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" style="color:var(--aqua)">README</a>.</p>
+  </div>
+</section>
+
+<!-- ============ DEMO ============ -->
+<section class="sec-pad" id="demo">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <span class="eyebrow">See for yourself</span>
+      <h2>UltraCast next to Miracast</h2>
+    </div>
+    <!--
+      ▶ TO ADD THE VIDEO: replace this whole .demo-frame block with a YouTube embed or a local file:
+      <div style="position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;border:1px solid var(--line)">
+        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/VIDEO_ID" title="UltraCast vs Miracast" frameborder="0" allowfullscreen></iframe>
+      </div>
+    -->
+    <div class="demo-frame reveal" role="img" aria-label="Demo video coming soon: a side-by-side comparison of UltraCast and Miracast on the same Wi-Fi.">
+      <div class="grid-bg"></div>
+      <div class="play">
+        <div class="play-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
+        <h3>Side-by-side demo</h3>
+        <p>Coming soon — same Wi-Fi, same screen</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ DOWNLOAD ============ -->
+<section class="sec-pad" id="download" style="background:var(--bg-elev);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
+  <div class="wrap">
+    <div class="sec-head reveal" style="margin-bottom:36px">
+      <span class="eyebrow">Free &amp; open source</span>
+      <h2>Get UltraCast</h2>
+    </div>
+    <div class="dl-grid">
+      <!-- Direct links are pinned to v0.1.0. On a new release, update the version in both URLs. -->
+      <div class="dl-card reveal">
+        <span class="tag">For your phone</span>
+        <h3>Sender</h3>
+        <div class="file">ultracast-sender.apk</div>
+        <p>Install it like a normal app. This is the device whose screen you want to mirror.</p>
+        <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/releases/download/v0.1.0/ultracast-sender.apk">
+          Download APK
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+      <div class="dl-card reveal">
+        <span class="tag">For your projector</span>
+        <h3>Receiver</h3>
+        <div class="file">ultracast-receiver.apk</div>
+        <p>Sideload it via a USB drive — most cheap projectors need this once. Then leave it running.</p>
+        <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/releases/download/v0.1.0/ultracast-receiver.apk">
+          Download APK
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </div>
+    <p class="dl-foot reveal">v0.1.0 · experimental · <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">all releases</a> · <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">install guide</a></p>
+  </div>
+</section>
+
+<!-- ============ STATUS / HONESTY ============ -->
+<section class="sec-pad" id="status">
+  <div class="wrap">
+    <div class="status reveal">
+      <span class="badge">● Early days</span>
+      <h2>Honest status</h2>
+      <p>UltraCast is v0.1.0 and experimental, tested so far on a single phone-and-projector pair. It's H.264 and local-network only, with no audio yet. It's built in the open — if you try it on different hardware, a quick report genuinely helps it get better.</p>
+      <div class="row">
+        <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener">Report your device</a>
+        <a class="btn btn-ghost" href="https://github.com/JoelPasapera/UltraCast#limitations" target="_blank" rel="noopener">Read the limitations</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#top">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="5" cy="19" r="2.3" fill="#2FE3C9"/>
+            <path d="M5 12.5a6.5 6.5 0 0 1 6.5 6.5" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round"/>
+            <path d="M5 7a12 12 0 0 1 12 12" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".6"/>
+          </svg>
+          UltraCast
+        </a>
+        <p>Low-latency screen mirroring for cheap projectors. Built in the open.</p>
+      </div>
+      <div class="foot-links">
+        <div class="foot-col">
+          <h4>Project</h4>
+          <a href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">GitHub repo</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">Releases</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/blob/main/LICENSE" target="_blank" rel="noopener">License (Apache-2.0)</a>
+        </div>
+        <div class="foot-col">
+          <h4>Help</h4>
+          <a href="https://github.com/JoelPasapera/UltraCast#readme" target="_blank" rel="noopener">Documentation</a>
+          <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">Install guide</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener">Report an issue</a>
+        </div>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>Built with C++ &amp; Kotlin.</span>
+      <span>Not affiliated with any projector manufacturer.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Live throughput bars in the HUD (decorative).
+  (function(){
+    var bars = document.getElementById('bars');
+    if(!bars) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var n = 22;
+    for(var i=0;i<n;i++){
+      var s = document.createElement('span');
+      s.style.setProperty('--i', i);
+      if(reduce){ s.style.height = (25 + (i*7)%60) + '%'; s.style.animation='none'; }
+      bars.appendChild(s);
+    }
+  })();
+
+  // Nav border on scroll.
+  var nav = document.getElementById('nav');
+  var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
+  onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
+
+  // Scroll reveals.
+  (function(){
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var els = document.querySelectorAll('.reveal');
+    if(reduce || !('IntersectionObserver' in window)){
+      els.forEach(function(e){ e.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+    els.forEach(function(e){ io.observe(e); });
+  })();
+</script>
+</body>
+</html>
