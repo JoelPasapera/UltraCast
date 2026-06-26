@@ -69,19 +69,29 @@
     transition:border-color .3s ease, background .3s ease;
   }
   header.nav.scrolled{border-bottom:1px solid var(--line);background:rgba(10,12,16,.86)}
-  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px}
-  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.05rem;letter-spacing:-.01em}
-  .brand svg{display:block}
-  .nav-links{display:flex;align-items:center;gap:30px}
+  .nav-inner{display:flex;align-items:center;justify-content:space-between;height:66px;gap:14px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:1.05rem;letter-spacing:-.01em;flex-shrink:0}
+  .brand svg{display:block;flex-shrink:0}
+  .nav-links{display:flex;align-items:center;gap:26px}
   .nav-links a.lnk{font-size:.92rem;color:var(--muted);transition:color .2s ease}
   .nav-links a.lnk:hover{color:var(--text)}
+
+  /* language toggle */
+  .lang-toggle{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--bg-elev);flex-shrink:0}
+  .lang-btn{
+    font-family:var(--mono);font-size:.74rem;font-weight:600;letter-spacing:.04em;
+    padding:7px 11px;background:transparent;color:var(--muted);border:0;cursor:pointer;
+    transition:background .2s ease,color .2s ease;line-height:1;
+  }
+  .lang-btn:hover{color:var(--text)}
+  .lang-btn.active{background:var(--aqua);color:#06120F}
 
   .btn{
     display:inline-flex;align-items:center;gap:8px;
     font-family:var(--display);font-weight:600;font-size:.92rem;
     padding:10px 18px;border-radius:10px;cursor:pointer;
     transition:transform .15s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
-    border:1px solid transparent;white-space:nowrap;
+    border:1px solid transparent;white-space:nowrap;flex-shrink:0;
   }
   .btn-primary{background:var(--aqua);color:#06120F;box-shadow:0 0 0 0 var(--aqua-line)}
   .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px -8px rgba(47,227,201,.45)}
@@ -136,7 +146,7 @@
     position:absolute;top:16px;left:18px;display:flex;align-items:center;gap:8px;
     font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;color:var(--muted);text-transform:uppercase;
   }
-  .dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua)}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--aqua);box-shadow:0 0 10px var(--aqua);flex-shrink:0}
   .pulse{animation:pulse 1.8s ease-in-out infinite}
   @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.8)}}
 
@@ -209,7 +219,7 @@
   .demo-frame .grid-bg{position:absolute;inset:0;opacity:.4;
     background-image:linear-gradient(var(--line-soft) 1px,transparent 1px),linear-gradient(90deg,var(--line-soft) 1px,transparent 1px);
     background-size:46px 46px;-webkit-mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%);mask-image:radial-gradient(circle at 50% 50%,#000,transparent 75%)}
-  .play{position:relative;z-index:1}
+  .play{position:relative;z-index:1;padding:20px}
   .play-btn{
     width:74px;height:74px;border-radius:50%;display:grid;place-items:center;margin:0 auto 18px;
     background:var(--aqua-soft);border:1px solid var(--aqua-line);color:var(--aqua);
@@ -269,13 +279,21 @@
     .hero-copy{max-width:none;order:1}
     .hero-visual{order:2}
     .feat-grid,.steps{grid-template-columns:1fr 1fr}
-    .nav-links .lnk{display:none}
+    .nav-links{gap:14px}
+    .nav-links a.lnk{display:none}
   }
-  @media (max-width:680px){
+  @media (max-width:600px){
+    .wrap{padding:0 18px}
+    .nav-links{gap:10px}
+    .nav-inner .btn-primary{padding:9px 14px;font-size:.86rem}
+    .lang-btn{padding:6px 9px;font-size:.71rem}
     .feat-grid,.steps,.dl-grid{grid-template-columns:1fr}
     .foot-links{gap:36px}
     .hud{max-width:none}
     .hud-rows{font-size:.7rem}
+  }
+  @media (max-width:380px){
+    .brand-name{display:none}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none !important;scroll-behavior:auto !important}
@@ -295,13 +313,17 @@
         <path d="M5 7a12 12 0 0 1 12 12" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".6"/>
         <path d="M5 1.5A17.5 17.5 0 0 1 22.5 19" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".3"/>
       </svg>
-      UltraCast
+      <span class="brand-name">UltraCast</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="lnk" href="#features">Features</a>
-      <a class="lnk" href="#how">How it works</a>
-      <a class="lnk" href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">GitHub</a>
-      <a class="btn btn-primary" href="#download">Download</a>
+      <a class="lnk" href="#features" data-i18n="nav_features">Features</a>
+      <a class="lnk" href="#how" data-i18n="nav_how">How it works</a>
+      <a class="lnk" href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener" data-i18n="nav_github">GitHub</a>
+      <div class="lang-toggle" role="group" aria-label="Language / Idioma">
+        <button type="button" class="lang-btn" data-lang="en">EN</button>
+        <button type="button" class="lang-btn" data-lang="es">ES</button>
+      </div>
+      <a class="btn btn-primary" href="#download" data-i18n="nav_download">Download</a>
     </nav>
   </div>
 </header>
@@ -312,30 +334,30 @@
 <section class="hero">
   <div class="wrap hero-grid">
     <div class="hero-copy">
-      <span class="eyebrow">Open source · Your Wi-Fi · Ultra-low latency</span>
-      <h1>Low-latency screen mirroring for <span class="hl">cheap projectors</span>.</h1>
-      <p class="lede">Stream your Android phone to an HY300-class projector over your own Wi-Fi. A custom pipeline with error correction and congestion control keeps the picture smooth where Miracast stutters, freezes, and drops.</p>
+      <span class="eyebrow" data-i18n="hero_eyebrow">Open source · Your Wi-Fi · Ultra-low latency</span>
+      <h1 data-i18n="hero_title">Low-latency screen mirroring for <span class="hl">cheap projectors</span>.</h1>
+      <p class="lede" data-i18n="hero_lede">Stream your Android phone to an HY300-class projector over your own Wi-Fi. A custom pipeline with error correction and congestion control keeps the picture smooth where Miracast stutters, freezes, and drops.</p>
       <div class="hero-cta">
         <a class="btn btn-primary btn-lg" href="#download">
-          Download the app
+          <span data-i18n="hero_cta_download">Download the app</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
         <a class="btn btn-ghost btn-lg" href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">
-          View source
+          <span data-i18n="hero_cta_source">View source</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
-      <p class="hero-note"><b>Two free APKs</b> · Apache-2.0 · No account, no cloud</p>
+      <p class="hero-note" data-i18n="hero_note"><b>Two free APKs</b> · Apache-2.0 · No account, no cloud</p>
     </div>
 
     <div class="hero-visual">
       <!-- The signature: a mock of what the projector shows, with the live diagnostic HUD. -->
-      <div class="screen" role="img" aria-label="A projector display showing the live diagnostic HUD: 60 fps, 0.3% loss, 2.1 ms jitter, connection healthy.">
+      <div class="screen" role="img" aria-label="A projector display showing the live diagnostic HUD: 60 fps, low loss, low jitter, connection healthy.">
         <div class="screen-bezel"></div>
-        <div class="live"><span class="dot pulse"></span> Live · mirroring</div>
+        <div class="live"><span class="dot pulse"></span> <span data-i18n="hud_live">Live · mirroring</span></div>
         <div class="hud">
-          <div class="hud-title">Quality</div>
-          <div class="hud-rows">
+          <div class="hud-title" data-i18n="hud_quality">Quality</div>
+          <div class="hud-rows" data-i18n="hud_rows">
             <div><span class="k">fps</span> <b>60</b></div>
             <div><span class="k">bitrate</span> <b>7.8 Mb/s</b></div>
             <div><span class="k">loss</span> <b>0.3%</b></div>
@@ -344,7 +366,7 @@
             <div><span class="k">link</span> <b>ok</b></div>
           </div>
           <div class="bars" id="bars" aria-hidden="true"></div>
-          <div class="hud-foot"><span>frames OK <b style="color:var(--aqua)">1820</b></span><span>· FEC rescued <b style="color:var(--aqua)">34</b></span><span>· <span class="ok">lost 0</span></span></div>
+          <div class="hud-foot" data-i18n="hud_foot"><span>frames OK <b style="color:var(--aqua)">1820</b></span><span>· FEC rescued <b style="color:var(--aqua)">34</b></span><span>· <span class="ok">lost 0</span></span></div>
         </div>
       </div>
     </div>
@@ -354,7 +376,7 @@
 <!-- ============ THESIS ============ -->
 <section class="thesis">
   <div class="wrap">
-    <p>Miracast assumes a perfect link. Real Wi-Fi <span class="em">isn't</span> — so UltraCast measures the connection and <span class="em2">adapts, packet by packet</span>.</p>
+    <p data-i18n="thesis_text">Miracast assumes a perfect link. Real Wi-Fi <span class="em">isn't</span> — so UltraCast measures the connection and <span class="em2">adapts, packet by packet</span>.</p>
   </div>
 </section>
 
@@ -362,45 +384,45 @@
 <section class="sec-pad" id="features">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">Under the hood</span>
-      <h2>What makes it hold up</h2>
+      <span class="eyebrow" data-i18n="feat_eyebrow">Under the hood</span>
+      <h2 data-i18n="feat_h2">What makes it hold up</h2>
     </div>
     <div class="feat-grid">
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
-        <h3>UDP, not TCP</h3>
-        <p>A lost packet never stalls the stream. No buffering spiral, no frozen frame waiting on a retransmit.</p>
+        <h3 data-i18n="card1_h3">UDP, not TCP</h3>
+        <p data-i18n="card1_p">A lost packet never stalls the stream. No buffering spiral, no frozen frame waiting on a retransmit.</p>
       </div>
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3 5 6v5c0 4.5 3 8 7 10 4-2 7-5.5 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Error correction</h3>
-        <p>Reed–Solomon parity rebuilds lost packets on the fly — no round-trip. NEON-accelerated on 64-bit ARM.</p>
+        <h3 data-i18n="card2_h3">Error correction</h3>
+        <p data-i18n="card2_p">Reed–Solomon parity rebuilds lost packets on the fly — no round-trip. NEON-accelerated on 64-bit ARM.</p>
       </div>
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h3l2 6 4-14 2.5 9L19 9l2 3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Congestion control</h3>
-        <p>Tells real congestion from radio interference, and only drops quality when the link is actually full — the same idea WebRTC uses.</p>
+        <h3 data-i18n="card3_h3">Congestion control</h3>
+        <p data-i18n="card3_p">Tells real congestion from radio interference, and only drops quality when the link is actually full — the same idea WebRTC uses.</p>
       </div>
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h10M18 7h2M4 17h2M10 17h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="16" cy="7" r="2.4" stroke="currentColor" stroke-width="1.8"/><circle cx="8" cy="17" r="2.4" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <h3>Adaptive bitrate</h3>
-        <p>Quality rises and falls with the network, live — without ever restarting the stream.</p>
+        <h3 data-i18n="card4_h3">Adaptive bitrate</h3>
+        <p data-i18n="card4_p">Quality rises and falls with the network, live — without ever restarting the stream.</p>
       </div>
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.8"/><path d="M3 9h18M8 5v14M16 5v14" stroke="currentColor" stroke-width="1.8"/></svg></div>
-        <h3>Content-adaptive frame rate</h3>
-        <p>Full motion when it counts, near-silent on a still slide. Your battery and your Wi-Fi both notice.</p>
+        <h3 data-i18n="card5_h3">Content-adaptive frame rate</h3>
+        <p data-i18n="card5_p">Full motion when it counts, near-silent on a still slide. Your battery and your Wi-Fi both notice.</p>
       </div>
 
       <div class="card reveal">
         <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2-6 3 14 3-10 2 4 4-2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Live diagnostics</h3>
-        <p>An on-screen HUD shows fps, loss, jitter, and recovery in real time. You can watch it working.</p>
+        <h3 data-i18n="card6_h3">Live diagnostics</h3>
+        <p data-i18n="card6_p">An on-screen HUD shows fps, loss, jitter, and recovery in real time. You can watch it working.</p>
       </div>
 
     </div>
@@ -411,27 +433,27 @@
 <section class="sec-pad" id="how" style="background:var(--bg-elev);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">Three steps</span>
-      <h2>How it works</h2>
+      <span class="eyebrow" data-i18n="how_eyebrow">Three steps</span>
+      <h2 data-i18n="how_h2">How it works</h2>
     </div>
     <div class="steps">
       <div class="step reveal">
         <span class="num">01</span>
-        <h3>Install on the projector</h3>
-        <p>Sideload the receiver APK once. Leave it running — it waits fullscreen for your phone.</p>
+        <h3 data-i18n="step1_h3">Install on the projector</h3>
+        <p data-i18n="step1_p">Sideload the receiver APK once. Leave it running — it waits fullscreen for your phone.</p>
       </div>
       <div class="step reveal">
         <span class="num">02</span>
-        <h3>Install on the phone</h3>
-        <p>Install the sender APK and grant screen capture when Android asks.</p>
+        <h3 data-i18n="step2_h3">Install on the phone</h3>
+        <p data-i18n="step2_p">Install the sender APK and grant screen capture when Android asks.</p>
       </div>
       <div class="step reveal">
         <span class="num">03</span>
-        <h3>Cast</h3>
-        <p>It finds the projector on your network and mirrors your screen. That's it.</p>
+        <h3 data-i18n="step3_h3">Cast</h3>
+        <p data-i18n="step3_p">It finds the projector on your network and mirrors your screen. That's it.</p>
       </div>
     </div>
-    <p class="steps-note reveal">Both devices on the same Wi-Fi. The projector sideload steps are in the <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" style="color:var(--aqua)">README</a>.</p>
+    <p class="steps-note reveal" data-i18n="steps_note">Both devices on the same Wi-Fi. The projector sideload steps are in the <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" style="color:var(--aqua)">README</a>.</p>
   </div>
 </section>
 
@@ -439,8 +461,8 @@
 <section class="sec-pad" id="demo">
   <div class="wrap">
     <div class="sec-head reveal">
-      <span class="eyebrow">See for yourself</span>
-      <h2>UltraCast next to Miracast</h2>
+      <span class="eyebrow" data-i18n="demo_eyebrow">See for yourself</span>
+      <h2 data-i18n="demo_h2">UltraCast next to Miracast</h2>
     </div>
     <!--
       ▶ TO ADD THE VIDEO: replace this whole .demo-frame block with a YouTube embed or a local file:
@@ -452,8 +474,8 @@
       <div class="grid-bg"></div>
       <div class="play">
         <div class="play-btn"><svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></div>
-        <h3>Side-by-side demo</h3>
-        <p>Coming soon — same Wi-Fi, same screen</p>
+        <h3 data-i18n="demo_play_h3">Side-by-side demo</h3>
+        <p data-i18n="demo_play_p">Coming soon — same Wi-Fi, same screen</p>
       </div>
     </div>
   </div>
@@ -463,33 +485,33 @@
 <section class="sec-pad" id="download" style="background:var(--bg-elev);border-top:1px solid var(--line-soft);border-bottom:1px solid var(--line-soft)">
   <div class="wrap">
     <div class="sec-head reveal" style="margin-bottom:36px">
-      <span class="eyebrow">Free &amp; open source</span>
-      <h2>Get UltraCast</h2>
+      <span class="eyebrow" data-i18n="dl_eyebrow">Free &amp; open source</span>
+      <h2 data-i18n="dl_h2">Get UltraCast</h2>
     </div>
     <div class="dl-grid">
       <!-- Direct links are pinned to v0.1.0. On a new release, update the version in both URLs. -->
       <div class="dl-card reveal">
-        <span class="tag">For your phone</span>
-        <h3>Sender</h3>
+        <span class="tag" data-i18n="dl1_tag">For your phone</span>
+        <h3 data-i18n="dl1_h3">Sender</h3>
         <div class="file">ultracast-sender.apk</div>
-        <p>Install it like a normal app. This is the device whose screen you want to mirror.</p>
+        <p data-i18n="dl1_p">Install it like a normal app. This is the device whose screen you want to mirror.</p>
         <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/releases/download/v0.1.0/ultracast-sender.apk">
-          Download APK
+          <span data-i18n="dl1_btn">Download APK</span>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
       <div class="dl-card reveal">
-        <span class="tag">For your projector</span>
-        <h3>Receiver</h3>
+        <span class="tag" data-i18n="dl2_tag">For your projector</span>
+        <h3 data-i18n="dl2_h3">Receiver</h3>
         <div class="file">ultracast-receiver.apk</div>
-        <p>Sideload it via a USB drive — most cheap projectors need this once. Then leave it running.</p>
+        <p data-i18n="dl2_p">Sideload it via a USB drive — most cheap projectors need this once. Then leave it running.</p>
         <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/releases/download/v0.1.0/ultracast-receiver.apk">
-          Download APK
+          <span data-i18n="dl2_btn">Download APK</span>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
       </div>
     </div>
-    <p class="dl-foot reveal">v0.1.0 · experimental · <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">all releases</a> · <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">install guide</a></p>
+    <p class="dl-foot reveal" data-i18n="dl_foot">v0.1.0 · experimental · <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">all releases</a> · <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">install guide</a></p>
   </div>
 </section>
 
@@ -497,12 +519,12 @@
 <section class="sec-pad" id="status">
   <div class="wrap">
     <div class="status reveal">
-      <span class="badge">● Early days</span>
-      <h2>Honest status</h2>
-      <p>UltraCast is v0.1.0 and experimental, tested so far on a single phone-and-projector pair. It's H.264 and local-network only, with no audio yet. It's built in the open — if you try it on different hardware, a quick report genuinely helps it get better.</p>
+      <span class="badge" data-i18n="status_badge">● Early days</span>
+      <h2 data-i18n="status_h2">Honest status</h2>
+      <p data-i18n="status_p">UltraCast is v0.1.0 and experimental, tested so far on a single phone-and-projector pair. It's H.264 and local-network only, with no audio yet. It's built in the open — if you try it on different hardware, a quick report genuinely helps it get better.</p>
       <div class="row">
-        <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener">Report your device</a>
-        <a class="btn btn-ghost" href="https://github.com/JoelPasapera/UltraCast#limitations" target="_blank" rel="noopener">Read the limitations</a>
+        <a class="btn btn-primary" href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener" data-i18n="status_btn1">Report your device</a>
+        <a class="btn btn-ghost" href="https://github.com/JoelPasapera/UltraCast#limitations" target="_blank" rel="noopener" data-i18n="status_btn2">Read the limitations</a>
       </div>
     </div>
   </div>
@@ -521,34 +543,202 @@
             <path d="M5 12.5a6.5 6.5 0 0 1 6.5 6.5" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round"/>
             <path d="M5 7a12 12 0 0 1 12 12" stroke="#2FE3C9" stroke-width="2" stroke-linecap="round" opacity=".6"/>
           </svg>
-          UltraCast
+          <span class="brand-name">UltraCast</span>
         </a>
-        <p>Low-latency screen mirroring for cheap projectors. Built in the open.</p>
+        <p data-i18n="foot_brand_p">Low-latency screen mirroring for cheap projectors. Built in the open.</p>
       </div>
       <div class="foot-links">
         <div class="foot-col">
-          <h4>Project</h4>
-          <a href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener">GitHub repo</a>
-          <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">Releases</a>
-          <a href="https://github.com/JoelPasapera/UltraCast/blob/main/LICENSE" target="_blank" rel="noopener">License (Apache-2.0)</a>
+          <h4 data-i18n="foot_col1_h4">Project</h4>
+          <a href="https://github.com/JoelPasapera/UltraCast" target="_blank" rel="noopener" data-i18n="foot_repo">GitHub repo</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener" data-i18n="foot_releases">Releases</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/blob/main/LICENSE" target="_blank" rel="noopener" data-i18n="foot_license">License (Apache-2.0)</a>
         </div>
         <div class="foot-col">
-          <h4>Help</h4>
-          <a href="https://github.com/JoelPasapera/UltraCast#readme" target="_blank" rel="noopener">Documentation</a>
-          <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">Install guide</a>
-          <a href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener">Report an issue</a>
+          <h4 data-i18n="foot_col2_h4">Help</h4>
+          <a href="https://github.com/JoelPasapera/UltraCast#readme" target="_blank" rel="noopener" data-i18n="foot_docs">Documentation</a>
+          <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" data-i18n="foot_install">Install guide</a>
+          <a href="https://github.com/JoelPasapera/UltraCast/issues" target="_blank" rel="noopener" data-i18n="foot_issue">Report an issue</a>
         </div>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>Built with C++ &amp; Kotlin.</span>
-      <span>Not affiliated with any projector manufacturer.</span>
+      <span data-i18n="foot_built">Built with C++ &amp; Kotlin.</span>
+      <span data-i18n="foot_affil">Not affiliated with any projector manufacturer.</span>
     </div>
   </div>
 </footer>
 
 <script>
-  // Live throughput bars in the HUD (decorative).
+  // ---------- Translations (EN / ES) ----------
+  var I18N = {
+    en: {
+      nav_features:`Features`,
+      nav_how:`How it works`,
+      nav_github:`GitHub`,
+      nav_download:`Download`,
+      hero_eyebrow:`Open source · Your Wi-Fi · Ultra-low latency`,
+      hero_title:`Low-latency screen mirroring for <span class="hl">cheap projectors</span>.`,
+      hero_lede:`Stream your Android phone to an HY300-class projector over your own Wi-Fi. A custom pipeline with error correction and congestion control keeps the picture smooth where Miracast stutters, freezes, and drops.`,
+      hero_cta_download:`Download the app`,
+      hero_cta_source:`View source`,
+      hero_note:`<b>Two free APKs</b> · Apache-2.0 · No account, no cloud`,
+      hud_live:`Live · mirroring`,
+      hud_quality:`Quality`,
+      hud_rows:`<div><span class="k">fps</span> <b>60</b></div><div><span class="k">bitrate</span> <b>7.8 Mb/s</b></div><div><span class="k">loss</span> <b>0.3%</b></div><div><span class="k">jitter</span> <b>2.1 ms</b></div><div><span class="k">FEC</span> <b>6%</b></div><div><span class="k">link</span> <b>ok</b></div>`,
+      hud_foot:`<span>frames OK <b style="color:var(--aqua)">1820</b></span><span>· FEC rescued <b style="color:var(--aqua)">34</b></span><span>· <span class="ok">lost 0</span></span>`,
+      thesis_text:`Miracast assumes a perfect link. Real Wi-Fi <span class="em">isn't</span> — so UltraCast measures the connection and <span class="em2">adapts, packet by packet</span>.`,
+      feat_eyebrow:`Under the hood`,
+      feat_h2:`What makes it hold up`,
+      card1_h3:`UDP, not TCP`,
+      card1_p:`A lost packet never stalls the stream. No buffering spiral, no frozen frame waiting on a retransmit.`,
+      card2_h3:`Error correction`,
+      card2_p:`Reed–Solomon parity rebuilds lost packets on the fly — no round-trip. NEON-accelerated on 64-bit ARM.`,
+      card3_h3:`Congestion control`,
+      card3_p:`Tells real congestion from radio interference, and only drops quality when the link is actually full — the same idea WebRTC uses.`,
+      card4_h3:`Adaptive bitrate`,
+      card4_p:`Quality rises and falls with the network, live — without ever restarting the stream.`,
+      card5_h3:`Content-adaptive frame rate`,
+      card5_p:`Full motion when it counts, near-silent on a still slide. Your battery and your Wi-Fi both notice.`,
+      card6_h3:`Live diagnostics`,
+      card6_p:`An on-screen HUD shows fps, loss, jitter, and recovery in real time. You can watch it working.`,
+      how_eyebrow:`Three steps`,
+      how_h2:`How it works`,
+      step1_h3:`Install on the projector`,
+      step1_p:`Sideload the receiver APK once. Leave it running — it waits fullscreen for your phone.`,
+      step2_h3:`Install on the phone`,
+      step2_p:`Install the sender APK and grant screen capture when Android asks.`,
+      step3_h3:`Cast`,
+      step3_p:`It finds the projector on your network and mirrors your screen. That's it.`,
+      steps_note:`Both devices on the same Wi-Fi. The projector sideload steps are in the <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" style="color:var(--aqua)">README</a>.`,
+      demo_eyebrow:`See for yourself`,
+      demo_h2:`UltraCast next to Miracast`,
+      demo_play_h3:`Side-by-side demo`,
+      demo_play_p:`Coming soon — same Wi-Fi, same screen`,
+      dl_eyebrow:`Free &amp; open source`,
+      dl_h2:`Get UltraCast`,
+      dl1_tag:`For your phone`,
+      dl1_h3:`Sender`,
+      dl1_p:`Install it like a normal app. This is the device whose screen you want to mirror.`,
+      dl1_btn:`Download APK`,
+      dl2_tag:`For your projector`,
+      dl2_h3:`Receiver`,
+      dl2_p:`Sideload it via a USB drive — most cheap projectors need this once. Then leave it running.`,
+      dl2_btn:`Download APK`,
+      dl_foot:`v0.1.0 · experimental · <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">all releases</a> · <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">install guide</a>`,
+      status_badge:`● Early days`,
+      status_h2:`Honest status`,
+      status_p:`UltraCast is v0.1.0 and experimental, tested so far on a single phone-and-projector pair. It's H.264 and local-network only, with no audio yet. It's built in the open — if you try it on different hardware, a quick report genuinely helps it get better.`,
+      status_btn1:`Report your device`,
+      status_btn2:`Read the limitations`,
+      foot_brand_p:`Low-latency screen mirroring for cheap projectors. Built in the open.`,
+      foot_col1_h4:`Project`,
+      foot_repo:`GitHub repo`,
+      foot_releases:`Releases`,
+      foot_license:`License (Apache-2.0)`,
+      foot_col2_h4:`Help`,
+      foot_docs:`Documentation`,
+      foot_install:`Install guide`,
+      foot_issue:`Report an issue`,
+      foot_built:`Built with C++ &amp; Kotlin.`,
+      foot_affil:`Not affiliated with any projector manufacturer.`
+    },
+    es: {
+      nav_features:`Funciones`,
+      nav_how:`Cómo funciona`,
+      nav_github:`GitHub`,
+      nav_download:`Descargar`,
+      hero_eyebrow:`Open source · Tu Wi-Fi · Latencia ultrabaja`,
+      hero_title:`Duplicación de pantalla de baja latencia para <span class="hl">proyectores baratos</span>.`,
+      hero_lede:`Transmite la pantalla de tu teléfono Android a un proyector tipo HY300 por tu propia red Wi-Fi. Un sistema propio con corrección de errores y control de congestión mantiene la imagen fluida ahí donde Miracast se traba, se congela y se corta.`,
+      hero_cta_download:`Descargar la app`,
+      hero_cta_source:`Ver el código`,
+      hero_note:`<b>Dos APK gratis</b> · Apache-2.0 · Sin cuenta, sin nube`,
+      hud_live:`En vivo · proyectando`,
+      hud_quality:`Calidad`,
+      hud_rows:`<div><span class="k">fps</span> <b>60</b></div><div><span class="k">bitrate</span> <b>7.8 Mb/s</b></div><div><span class="k">pérdida</span> <b>0.3%</b></div><div><span class="k">jitter</span> <b>2.1 ms</b></div><div><span class="k">FEC</span> <b>6%</b></div><div><span class="k">enlace</span> <b>ok</b></div>`,
+      hud_foot:`<span>cuadros OK <b style="color:var(--aqua)">1820</b></span><span>· FEC recuperó <b style="color:var(--aqua)">34</b></span><span>· <span class="ok">perdidos 0</span></span>`,
+      thesis_text:`Miracast da por hecho un enlace perfecto. El Wi-Fi real <span class="em">no lo es</span> — por eso UltraCast mide la conexión y <span class="em2">se adapta, paquete por paquete</span>.`,
+      feat_eyebrow:`Por dentro`,
+      feat_h2:`Por qué aguanta`,
+      card1_h3:`UDP, no TCP`,
+      card1_p:`Un paquete perdido nunca frena la transmisión. Sin espirales de buffering, sin imagen congelada esperando un reenvío.`,
+      card2_h3:`Corrección de errores`,
+      card2_p:`La paridad Reed–Solomon reconstruye los paquetes perdidos al vuelo, sin viajes de ida y vuelta. Acelerada con NEON en ARM de 64 bits.`,
+      card3_h3:`Control de congestión`,
+      card3_p:`Distingue la congestión real de la interferencia de radio, y solo baja la calidad cuando el enlace está de verdad saturado — la misma idea que usa WebRTC.`,
+      card4_h3:`Bitrate adaptativo`,
+      card4_p:`La calidad sube y baja con la red, en vivo, sin reiniciar nunca la transmisión.`,
+      card5_h3:`Fotogramas según el contenido`,
+      card5_p:`Movimiento pleno cuando importa, casi en reposo en una diapositiva fija. Tu batería y tu Wi-Fi lo agradecen.`,
+      card6_h3:`Diagnóstico en vivo`,
+      card6_p:`Un HUD en pantalla muestra fps, pérdida, jitter y recuperación en tiempo real. Puedes verlo trabajar.`,
+      how_eyebrow:`Tres pasos`,
+      how_h2:`Cómo funciona`,
+      step1_h3:`Instala en el proyector`,
+      step1_p:`Instala el APK receptor una vez (sideload). Déjalo abierto: espera a pantalla completa a que llegue tu teléfono.`,
+      step2_h3:`Instala en el teléfono`,
+      step2_p:`Instala el APK emisor y concede la captura de pantalla cuando Android lo pida.`,
+      step3_h3:`Proyecta`,
+      step3_p:`Encuentra el proyector en tu red y duplica tu pantalla. Eso es todo.`,
+      steps_note:`Ambos dispositivos en la misma red Wi-Fi. Los pasos para instalar en el proyector (sideload) están en el <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener" style="color:var(--aqua)">README</a>.`,
+      demo_eyebrow:`Compruébalo tú mismo`,
+      demo_h2:`UltraCast al lado de Miracast`,
+      demo_play_h3:`Demo lado a lado`,
+      demo_play_p:`Próximamente — misma Wi-Fi, misma pantalla`,
+      dl_eyebrow:`Gratis y open source`,
+      dl_h2:`Descarga UltraCast`,
+      dl1_tag:`Para tu teléfono`,
+      dl1_h3:`Emisor`,
+      dl1_p:`Instálalo como una app normal. Es el dispositivo cuya pantalla quieres duplicar.`,
+      dl1_btn:`Descargar APK`,
+      dl2_tag:`Para tu proyector`,
+      dl2_h3:`Receptor`,
+      dl2_p:`Instálalo por USB (sideload) — la mayoría de los proyectores baratos lo necesitan una vez. Luego déjalo abierto.`,
+      dl2_btn:`Descargar APK`,
+      dl_foot:`v0.1.0 · experimental · <a href="https://github.com/JoelPasapera/UltraCast/releases" target="_blank" rel="noopener">todas las versiones</a> · <a href="https://github.com/JoelPasapera/UltraCast#installing" target="_blank" rel="noopener">guía de instalación</a>`,
+      status_badge:`● Primeros pasos`,
+      status_h2:`El estado real del proyecto`,
+      status_p:`UltraCast es v0.1.0 y experimental, probado hasta ahora en un solo par de teléfono y proyector. Funciona solo con H.264 y en red local, y todavía no tiene audio. Está hecho a la vista de todos — si lo pruebas en otro hardware, un reporte corto ayuda muchísimo a mejorarlo.`,
+      status_btn1:`Reporta tu dispositivo`,
+      status_btn2:`Lee las limitaciones`,
+      foot_brand_p:`Duplicación de pantalla de baja latencia para proyectores baratos. Hecho a la vista de todos.`,
+      foot_col1_h4:`Proyecto`,
+      foot_repo:`Repositorio`,
+      foot_releases:`Versiones`,
+      foot_license:`Licencia (Apache-2.0)`,
+      foot_col2_h4:`Ayuda`,
+      foot_docs:`Documentación`,
+      foot_install:`Guía de instalación`,
+      foot_issue:`Reportar un problema`,
+      foot_built:`Hecho con C++ y Kotlin.`,
+      foot_affil:`Sin afiliación con ningún fabricante de proyectores.`
+    }
+  };
+
+  function setLang(lang){
+    if(!I18N[lang]) lang = 'en';
+    var dict = I18N[lang];
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      if(dict[key] != null) el.innerHTML = dict[key];
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(function(b){
+      var on = b.getAttribute('data-lang') === lang;
+      b.classList.toggle('active', on);
+      b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    });
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.addEventListener('click', function(){ setLang(b.getAttribute('data-lang')); });
+  });
+
+  // Default to the browser's language (Spanish browsers see Spanish), else English.
+  setLang((navigator.language || 'en').toLowerCase().indexOf('es') === 0 ? 'es' : 'en');
+
+  // ---------- Live throughput bars in the HUD (decorative) ----------
   (function(){
     var bars = document.getElementById('bars');
     if(!bars) return;
@@ -562,12 +752,12 @@
     }
   })();
 
-  // Nav border on scroll.
+  // ---------- Nav border on scroll ----------
   var nav = document.getElementById('nav');
   var onScroll = function(){ nav.classList.toggle('scrolled', window.scrollY > 12); };
   onScroll(); window.addEventListener('scroll', onScroll, {passive:true});
 
-  // Scroll reveals.
+  // ---------- Scroll reveals ----------
   (function(){
     var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     var els = document.querySelectorAll('.reveal');
