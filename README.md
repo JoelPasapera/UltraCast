@@ -8,7 +8,7 @@ This project is distributed under the terms of the [`LICENSE`](LICENSE) file in 
 
 ![platform](https://img.shields.io/badge/platform-Android-green)
 ![language](https://img.shields.io/badge/native-C%2B%2B%20%2F%20Kotlin-blue)
-<!-- Add a license badge here once you pick one, e.g. ![license](https://img.shields.io/badge/license-MIT-lightgrey) -->
+![license](https://img.shields.io/badge/license-Apache--2.0-lightgrey)
 
 UltraCast mirrors an Android phone's screen to a cheap Android projector (or any second Android device) over your local Wi-Fi, using a purpose-built low-latency video pipeline that keeps working on weak or congested networks where Miracast stutters, freezes, or drops the connection.
 
@@ -20,7 +20,6 @@ It is **two apps** — a **sender** (the phone) and a **receiver** (the projecto
 
 ## Table of contents
 
-- [Demo](#demo)
 - [Features](#features)
 - [How it works](#how-it-works)
   - [Architecture](#architecture)
@@ -42,14 +41,6 @@ It is **two apps** — a **sender** (the phone) and a **receiver** (the projecto
 - [Contributing](#contributing)
 - [License](#license)
 - [Acknowledgments](#acknowledgments)
-
----
-
-## Demo
-
-> 📹 **Add a 30–60 second side-by-side clip here: UltraCast vs Miracast on the same Wi-Fi, mirroring the same content.**
->
-> This is the single most important thing for adoption. A screen-mirroring tool with no visible proof of being smoother gets ignored. Film both screens with a phone in slow motion, or screen-record both. One good clip is worth more than this entire README.
 
 ---
 
@@ -318,11 +309,7 @@ Bug reports, tuning findings, and pull requests for the roadmap items are all ap
 
 ## License
 
-> **Choose a license before promoting the project.** Two common options:
-> - **MIT / Apache-2.0** (permissive) — maximizes adoption; anyone can use it, including commercially. (scrcpy uses Apache-2.0.)
-> - **GPL-3.0** (copyleft) — anyone who distributes a modified version must also open their source. (Moonlight uses GPL-3.0.)
->
-> Add the chosen `LICENSE` file to the repository root and update this section.
+Apache License 2.0 — see the [`LICENSE`](LICENSE) file in the repository root.
 
 ---
 
