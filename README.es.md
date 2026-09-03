@@ -6,7 +6,7 @@
 
 ![platform](https://img.shields.io/badge/platform-Android-green)
 ![language](https://img.shields.io/badge/native-C%2B%2B%20%2F%20Kotlin-blue)
-<!-- Agregá una insignia de licencia aquí, p. ej. ![license](https://img.shields.io/badge/license-MIT-lightgrey) -->
+![license](https://img.shields.io/badge/license-Apache--2.0-lightgrey)
 
 UltraCast refleja la pantalla de un celular Android en un proyector Android barato (o en cualquier segundo dispositivo Android) a través de tu red Wi-Fi local, usando un pipeline de vídeo de baja latencia hecho a medida que sigue funcionando en redes débiles o congestionadas, donde Miracast tartamudea, se congela o corta la conexión.
 
@@ -18,7 +18,6 @@ Son **dos apps** — un **emisor** (el celular) y un **receptor** (el proyector)
 
 ## Tabla de contenidos
 
-- [Demo](#demo)
 - [Características](#características)
 - [Cómo funciona](#cómo-funciona)
   - [Arquitectura](#arquitectura)
@@ -40,14 +39,6 @@ Son **dos apps** — un **emisor** (el celular) y un **receptor** (el proyector)
 - [Cómo contribuir](#cómo-contribuir)
 - [Licencia](#licencia)
 - [Agradecimientos](#agradecimientos)
-
----
-
-## Demo
-
-> 📹 **Agregar aquí un clip de 30–60 segundos lado a lado: UltraCast vs Miracast en el mismo Wi-Fi, espejando el mismo contenido.**
->
-> Es lo más importante para la adopción, por encima de todo este README. Una herramienta de espejado sin una prueba visible de ser más fluida pasa desapercibida. Filmá ambas pantallas con un celular en cámara lenta, o grabá la pantalla de las dos. Un buen clip vale más que todo este README.
 
 ---
 
@@ -316,7 +307,7 @@ Los reportes de bugs, los hallazgos de ajuste y los pull requests para los punto
 
 ## Licencia
 
-Este proyecto se distribuye bajo los términos del archivo [`LICENSE`](LICENSE) en la raíz del repositorio.
+Licencia Apache 2.0 — ver el archivo [`LICENSE`](LICENSE) en la raíz del repositorio.
 
 ---
 
