@@ -1,5 +1,7 @@
 # UltraCast
 
+-- New improvements are coming soon!
+
 **Ultra-low-latency wireless screen mirroring for cheap Android projectors — built because Miracast wasn't good enough.**
 
 **English** · **[Español](README.es.md)**
